@@ -98,7 +98,7 @@
           $('body').append(modal);
 
           $('.earth-button').click(function () {
-            game.removeAll();
+            // game.removeAll();
             removeModal();
             game.levelGenerator.generateLevel("initial");
             game.sandbox = false;
@@ -264,20 +264,41 @@
     <script src="/socket.io/socket.io.js"></script>
     <script type="text/javascript">
       $( document ).ready(function() {
-        var socket = io();
+        var socket = window.socket = io();
+        var hasSetup = false;
 
-        // $('form').submit(function(){
-        //   socket.emit('chat message', $('#m').val());
-        //   $('#m').val('');
-        //   return false;
-        // });
+        // socket.emit('new player', socket.id);
 
-        // socket.on('chat message', function(msg){
-        //   $('#messages').append($('<li>').text(msg));
-        //   debugger;
-        //   var $cont = $('#message-container');
-        //   $cont[0].scrollTop = $cont[0].scrollHeight;
-        // });
+        socket.on('new moon', function (data) {
+          game.objectFromOptions(data);
+        });
+
+        socket.on('setup space', function (moons) {
+          var moonIds = Object.keys(moons);
+          for (var i = 0; i < moonIds.length; i++) {
+            game.objectFromOptions(moons[moonIds[i]]);
+          }
+
+          hasSetup = true;
+        });
+
+        socket.on('update space', function (moons) {
+          debugger;
+          for (var i = 0; i < game.asteroids.length; i++) {
+            console.log("before" + game.asteroids[i].pos)
+            var asteroid = game.asteroids[i];
+            asteroid.pos = moons[asteroid.id].pos;
+            asteroid.vel = moons[asteroid.id].vel;
+            console.log("after" + game.asteroids[i].pos)
+          }
+        });
+
+        setInterval(function () {
+          if (hasSetup) {
+            socket.emit('update-moons', game.asteroids);
+          }
+        }, 1000);
+
       });
     </script>
   </body>

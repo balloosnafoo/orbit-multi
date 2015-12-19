@@ -41,8 +41,8 @@
         this.cursor.pos
       );
 
-      velocity[0] *= .025;
-      velocity[1] *= .025;
+      velocity[0] *= 0.025;
+      velocity[1] *= 0.025;
 
       var newAsteroid = new Asteroids.Asteroid({
         pos: this.createPos,
@@ -56,8 +56,8 @@
   };
 
   Game.prototype.objectFromOptions = function (options) {
+    options.image = this.images.moon;
     if (!options.alreadyScaled) {
-      options.image = this.images.moon;
       var x = this.width * (options.pos[0] / 1700);
       var y = this.height * (options.pos[1] / 900);
       var velX = this.width * (options.vel[0] / 1700);
@@ -82,18 +82,20 @@
         pos
       );
 
-      velocity[0] *= .025;
-      velocity[1] *= .025;
+      velocity[0] *= 0.025;
+      velocity[1] *= 0.025;
 
-      var newAsteroid = new Asteroids.Asteroid({
+      var newAsteroid = {
         pos: this.clickOrigin,
         vel: velocity,
         image: this.images.moon,
-        radius: this.objectSize
-      });
+        radius: this.objectSize,
+        alreadyScaled: true // for testing simplicity
+      };
 
       this.clickOrigin = undefined;
-      this.asteroids.push(newAsteroid);
+      // this.asteroids.push(newAsteroid);
+      socket.emit('new moon', newAsteroid);
     }
   };
 
@@ -105,11 +107,11 @@
       this.clickOrigin[1] < this.startingZone.topLeft[1] ||
       this.clickOrigin[1] > this.startingZone.bottomRight[1]
     ) { return false; } else { return true; }
-  }
+  };
 
   Game.prototype.setObjectOrigin = function (pos) {
     this.clickOrigin = pos;
-  }
+  };
 
   Game.prototype.createPlanet = function (options) {
     // Reject any planets made in game or earth mode
@@ -163,7 +165,7 @@
       objects[i].move();
     }
 
-    for (var i = 0; i < this.particles.length; i++) {
+    for (i = 0; i < this.particles.length; i++) {
       this.particles[i].move();
     }
   };
@@ -171,6 +173,7 @@
   Game.prototype.checkCollisions = function () {
     var dyingObjectArr = [];
     var beatLevel = false;
+    var dyingAsteroidIds = [];
     for (var i = 0; i < this.asteroids.length; i++) {
       for (var j = 0; j < this.allObjects().length; j++) {
         if (i === j) continue;
@@ -179,10 +182,12 @@
             beatLevel = true;
           }
           dyingObjectArr.push(i);
+          dyingAsteroidIds.push(this.asteroids[i].id);
           this.createExplosion(this.asteroids[i], this.allObjects()[j]);
         }
       }
     }
+    if (dyingAsteroidIds.length) { socket.emit('collision', dyingAsteroidIds); }
     this.dyingObjects = this.separateObjects(dyingObjectArr, "asteroids");
     if (beatLevel) { this.nextLevel(); }
   };
@@ -196,23 +201,23 @@
   // this.asteroids. Ensures that game is not slowed by orphaned objects flying
   // into the depths of space.
   Game.prototype.deleteLostObjects = function () {
-    var exclusionArr = [];
-    for (var i = 0; i < this.asteroids.length; i++) {
-      if (this.asteroids[i].pos[0] > (this.width * 2) ||
-          this.asteroids[i].pos[0] < 0 - (this.width * 2) ||
-          this.asteroids[i].pos[1] > (this.height * 2) ||
-          this.asteroids[i].pos[1] < 0 - (this.height * 2)) {
-        exclusionArr.push(i);
-      }
-    }
-    this.separateObjects(exclusionArr, "asteroids");
+    // var exclusionArr = [];
+    // for (var i = 0; i < this.asteroids.length; i++) {
+    //   if (this.asteroids[i].pos[0] > (this.width * 2) ||
+    //       this.asteroids[i].pos[0] < 0 - (this.width * 2) ||
+    //       this.asteroids[i].pos[1] > (this.height * 2) ||
+    //       this.asteroids[i].pos[1] < 0 - (this.height * 2)) {
+    //     exclusionArr.push(i);
+    //   }
+    // }
+    // this.separateObjects(exclusionArr, "asteroids");
   };
 
   Game.prototype.deleteLostParticles = function () {
     var exclusionArr = [];
     for (var i = 0; i < this.particles.length; i++) {
       if (this.particles[i].scale <= 0) {
-        exclusionArr.push(i)
+        exclusionArr.push(i);
       }
     }
 
@@ -347,10 +352,10 @@
     var count = 10;
     var minSpeed = 1.0;
     var maxSpeed = 5.0;
-    var minScaleSpeed = .01;
-    var maxScaleSpeed = .05;
-    var maybeReflectionX = object.radius > (otherObject.radius / 3) ? 1 : -.2;
-    var maybeReflectionY = object.radius > (otherObject.radius / 3) ? 1 : -.2;
+    var minScaleSpeed = 0.01;
+    var maxScaleSpeed = 0.05;
+    var maybeReflectionX = object.radius > (otherObject.radius / 3) ? 1 : -0.2;
+    var maybeReflectionY = object.radius > (otherObject.radius / 3) ? 1 : -0.2;
     if (Math.abs(object.vel[0]) > Math.abs(object.vel[1])) {
       maybeReflectionX = 1;
     } else {
@@ -362,7 +367,7 @@
       var speed = Asteroids.Util.randomFloat(minSpeed, maxSpeed);
       var velX = speed * Math.cos(angle * Math.PI / 180.0);
       var velY = speed * Math.sin(angle * Math.PI / 180.0);
-      var color = Math.random() > .5 ? "rgb(184, 39, 19)" : "rgb(205, 116, 29)"
+      var color = Math.random() > 0.5 ? "rgb(184, 39, 19)" : "rgb(205, 116, 29)";
 
       if (Math.random() > -1) {
         // 70% chance of being a particle

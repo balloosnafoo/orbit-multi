@@ -19,7 +19,7 @@
 
   Asteroid.randomSize = function () {
     return Math.floor( ((Math.random() * 1.5) + 1) * 10 );
-  }
+  };
 
   Asteroid.prototype.receivePull = function (vector) {
     this.pullVectors = this.pullVectors.concat([vector]);
