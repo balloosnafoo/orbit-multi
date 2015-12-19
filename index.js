@@ -26,7 +26,8 @@ io.on('connection', function (socket) {
     }
   });
 
-  socket.on('update-moons', function (moons) {
+  socket.on('update-moons', function (data) {
+    var moons = data.moons;
     for (var i = 0; i < moons.length; i++) {
       liveMoons[moons[i].id].pos = moons[i].pos;
       liveMoons[moons[i].id].vel = moons[i].vel;

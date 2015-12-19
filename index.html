@@ -283,19 +283,22 @@
         });
 
         socket.on('update space', function (moons) {
-          debugger;
           for (var i = 0; i < game.asteroids.length; i++) {
-            console.log("before" + game.asteroids[i].pos)
             var asteroid = game.asteroids[i];
-            asteroid.pos = moons[asteroid.id].pos;
+            asteroid.pos = [
+              moons[asteroid.id].pos[0] + Math.floor(game.width  / 2),
+              moons[asteroid.id].pos[1] + Math.floor(game.height / 2)
+            ];
             asteroid.vel = moons[asteroid.id].vel;
-            console.log("after" + game.asteroids[i].pos)
           }
         });
 
         setInterval(function () {
           if (hasSetup) {
-            socket.emit('update-moons', game.asteroids);
+            socket.emit('update-moons', {
+              moons: game.asteroidsFromCenter(),
+              origin: {height: game.height, width: game.width}
+            });
           }
         }, 1000);
 

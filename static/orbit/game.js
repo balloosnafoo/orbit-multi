@@ -17,7 +17,7 @@
     this.dyingObjects = [];
 
     this.levelGenerator = new Asteroids.LevelGenerator({game: this});
-    this.levelGenerator.generateLevel("initial");
+    // this.levelGenerator.generateLevel("initial");
   };
 
   // Game.DIM_X = 750;
@@ -68,6 +68,11 @@
       options.vel = [velX, velY];
       options.radius = radius;
       options.alreadyScaled = true;
+    }
+
+    if (options.posFromCenter) {
+      var x = Math.floor(this.width / 2)  + options.pos[0];
+      var y = Math.floor(this.height / 2) + options.pos[1];
     }
 
     this.asteroids.push(new Asteroids.Asteroid(options));
@@ -138,6 +143,12 @@
 
       options.radius = this.width * (options.radius / 1700);
       options.alreadyScaled = true;
+    }
+
+    if (options.posFromCenter) {
+      var x = Math.floor(this.width / 2)  + options.pos[0];
+      var y = Math.floor(this.height / 2) + options.pos[1];
+      options.pos = [x, y];
     }
 
     this.planets.push(
@@ -335,7 +346,11 @@
 
   Game.prototype.exportPlanetInfo = function () {
     this.planets.forEach( function (planet) {
-      console.log("{objectType: planet, pos: [" + planet.pos + "] , radius:" + planet.radius + ", planetType: '" + planet.image.id + "'},\n");
+      console.log(
+        "{objectType: planet, pos: [" + planet.pos +
+        "] , radius:" + planet.radius + ", planetType: '" +
+        planet.image.id + "'},\n"
+      );
     });
   };
 
@@ -345,7 +360,6 @@
     this.planets = [];
   };
 
-  // Game.prototype.createExplosion = function (x, y, color, object1, object2) {
   Game.prototype.createExplosion = function (object, otherObject) {
     var minSize = 10;
     var maxSize = object.radius;
@@ -394,6 +408,17 @@
         this.asteroids.push(asteroid);
       }
     }
+  };
+
+  Game.prototype.asteroidsFromCenter = function () {
+    var asteroids = this.asteroids.slice();
+    for (var i = 0; i < asteroids.length; i++) {
+      asteroids[i].pos = [
+        asteroids[i].pos[0] - Math.floor(this.width  / 2),
+        asteroids[i].pos[1] - Math.floor(this.height / 2)
+      ];
+    }
+    return asteroids;
   };
 
 })();
