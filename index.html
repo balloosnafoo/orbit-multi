@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+
+    <script src="./vendor/keymaster.js"></script>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3/jquery.min.js"></script>
+
+    <script type="text/javascript" src="./orbit/util.js"></script>
+    <script type="text/javascript" src="./orbit/moving-object.js"></script>
+    <script type="text/javascript" src="./orbit/asteroid.js"></script>
+    <script type="text/javascript" src="./orbit/cursor.js"></script>
+    <script type="text/javascript" src="./orbit/planet.js"></script>
+    <script type="text/javascript" src="./orbit/particle.js"></script>
+    <script type="text/javascript" src="./orbit/starting-zone.js"></script>
+    <script type="text/javascript" src="./orbit/level-generator.js"></script>
+    <script type="text/javascript" src="./orbit/game.js"></script>
+    <script type="text/javascript" src="./orbit/game-view.js"></script>
+
+    <link rel="stylesheet" href="./orbit/game.css" charset="utf-8">
+
+  </head>
+  <body>
+    <!-- <h1>ORBIT GAME</h1> -->
+    <h1 class="title">Orbit Game</h1>
+
+    <div class="menu-button button">
+      Menu
+    </div>
+
+    <canvas id="game-canvas"></canvas>
+
+    <div style="display:none;">
+      <img id="earth" src="http://i.imgur.com/otF17Fi.png">
+      <img id="moon" src="http://i.imgur.com/9L66AZe.png">
+      <img id="green" src="http://i.imgur.com/Ko5HDJQ.png">
+      <img id="red" src="http://i.imgur.com/JojoWco.png">
+      <img id="purple" src="http://i.imgur.com/Y55SEy7.png">
+    </div>
+
+    <script type="application/javascript">
+      var canvasEl = document.getElementById("game-canvas");
+      var images = {
+        earth:  document.getElementById('earth'),
+        moon:   document.getElementById('moon'),
+        green:  document.getElementById('green'),
+        red:    document.getElementById('red'),
+        purple: document.getElementById('purple')
+      }
+
+      // canvasEl.width = 1700;
+      // canvasEl.height = 900;
+
+      canvasEl.width = window.innerWidth - 10;
+      canvasEl.height = window.innerHeight - 75;
+
+      var ctx = canvasEl.getContext("2d");
+      var game = new Asteroids.Game({
+        images: images,
+        width: canvasEl.width,
+        height: canvasEl.height
+      });
+
+      new Asteroids.GameView({
+        game: game,
+        ctx: ctx,
+        images: images
+      }).start();
+    </script>
+
+    <script type="text/javascript">
+      $(document).ready(function () {
+        $('.menu-button').click(function () {
+          placeModal();
+        });
+
+        var removeModal = function () {
+          $('.m-background').remove();
+          $('.m-content').remove();
+        }
+
+        var newModal = function (elementId) {
+          var modal = $(elementId).html();
+          $('body').append(modal);
+
+          $('.m-background').click(function () {
+            removeModal();
+          });
+
+          $('.play-button').click(function () {
+            removeModal();
+          });
+        }
+
+        var placeModal = function () {
+          var modal = $('#instructions-template').html();
+          $('body').append(modal);
+
+          $('.earth-button').click(function () {
+            game.removeAll();
+            removeModal();
+            game.levelGenerator.generateLevel("initial");
+            game.sandbox = false;
+          });
+
+          $('.sandbox-button').click(function () {
+            removeModal();
+            game.removeAll();
+            game.sandbox = true;
+            newModal('#sandbox-modal');
+          });
+
+          $('.level-button').click(function () {
+            game.removeAll();
+            removeModal();
+            game.levelGenerator.generateLevel("level1");
+            game.sandbox = false;
+            newModal('#level-modal');
+          });
+
+          $('.m-background').click(function () {
+            removeModal();
+          });
+        }
+
+        placeModal();
+      });
+    </script>
+
+    <script type="text/javascript">
+      $(document).ready(function () {
+        var init = function () {
+          var canvas = document.getElementById("game-canvas");
+          canvas.addEventListener("mousedown", getPosition, false);
+          canvas.addEventListener("mouseup", getPosition, false);
+          canvas.addEventListener("mousemove", getPosition, false);
+        }
+
+        var getPosition = function (event) {
+          if (!game.clickOrigin && event.type !== "mousedown") { return; }
+          var x = new Number();
+          var y = new Number();
+          var canvas = document.getElementById("game-canvas");
+
+          if (event.x != undefined && event.y != undefined) {
+            x = event.x;
+            y = event.y;
+          } else {
+            x = event.clientX + document.body.scrollLeft +
+                document.documentElement.scrollLeft;
+            y = event.clientY + document.body.scrollTop +
+                document.documentElement.scrollTop;
+          }
+
+          x -= canvas.offsetLeft;
+          y -= canvas.offsetTop;
+
+          if (event.type === "mousedown") {
+            game.setObjectOrigin([x, y]);
+            game.updateCurrentMouse([x, y]);
+          } else if (event.type === "mouseup") {
+            game.objectFromClick([x, y])
+          } else {
+            game.updateCurrentMouse([x, y]);
+          }
+        }
+
+        init();
+      });
+    </script>
+
+    <!-- Instructions Modal Template -->
+    <script id="instructions-template" type="text/template">
+      <div class="m-background"></div>
+
+      <div class="m-content">
+        <h1>Welcome to Orbit Game!</h1>
+        <p>
+          In this game you may create moons that are drawn to each other and to
+          the planets on the map.
+        </p>
+
+        <p>
+          Moons are made by clicking, dragging and releasing. The point at which
+          the drag starts determines the origin of the new moon, the direction
+          and speed are determined by the direction and distance at which you
+          release the mouse button.
+        </p>
+
+        <div class="mode-selection button-group">
+          <div class="button earth-button">
+            Earth
+          </div>
+          <div class="button sandbox-button">
+            Sandbox
+          </div>
+          <div class="button level-button">
+            Levels
+          </div>
+        </div>
+      </div>
+    </script>
+
+    <!-- Win Modal Template -->
+    <script id="win-modal" type="text/template">
+      <div class="m-background"></div>
+
+      <div class="m-content">
+        <h1>You Win!</h1>
+        <p>
+          Thank you for playing!
+        </p>
+      </div>
+    </script>
+
+    <script id="level-modal" type="text/template">
+      <div class="m-background"></div>
+
+      <div class="m-content">
+        <h1>Level Mode</h1>
+
+        <p>
+          Goal: Hit the green planets. Your moons must be generated within the
+          green starting zone.
+        </p>
+
+        <p>
+          Avoid the red and purple planets. Red planets have normal gravity,
+          and purple planets have antigravity fields.
+        </p>
+        <div class="button play-button">
+          Play
+        </div>
+      </div>
+    </script>
+
+    <script id="sandbox-modal" type="text/template">
+      <div class="m-background"></div>
+
+      <div class="m-content">
+        <h1>Sandbox Mode</h1>
+        <ul>
+          <li>Move cursor: 'wasd'</li>
+          <li>increase/decrease cursor speed: 'c', 'v'</li>
+          <li>Shrink/Enlargen created objects: '[', ']'</li>
+          <li>Make an Earth: 'p'</li>
+          <li>Make green/red planets: 'o', 'i'</li>
+          <li>Make antigravity planets: 'u'</li>
+        </ul>
+
+        <p>
+          If you happen to make a level that you like and want it added, hit
+          the '/' keym open up the console, copy the logs, and send it
+          to skinnerm@email.arizona.edu
+        </p>
+
+        <div class="button play-button">
+          Play!
+        </div>
+      </div>
+    </script>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script type="text/javascript">
+      $( document ).ready(function() {
+        var socket = io();
+
+        // $('form').submit(function(){
+        //   socket.emit('chat message', $('#m').val());
+        //   $('#m').val('');
+        //   return false;
+        // });
+
+        // socket.on('chat message', function(msg){
+        //   $('#messages').append($('<li>').text(msg));
+        //   debugger;
+        //   var $cont = $('#message-container');
+        //   $cont[0].scrollTop = $cont[0].scrollHeight;
+        // });
+      });
+    </script>
+  </body>
+</html>

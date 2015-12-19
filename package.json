@@ -1,0 +1,9 @@
+{
+  "name": "orbit-multiplayer",
+  "version": "0.0.1",
+  "description": "multiplayer version of orbit game using socket.io",
+  "dependencies": {
+    "express": "^4.10.2",
+    "socket.io": "^1.3.7"
+  }
+}
