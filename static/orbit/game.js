@@ -71,8 +71,10 @@
     }
 
     if (options.posFromCenter) {
-      var x = Math.floor(this.width / 2)  + options.pos[0];
-      var y = Math.floor(this.height / 2) + options.pos[1];
+      var x = options.pos[0] + Math.floor(this.width / 2);
+      var y = options.pos[1] + Math.floor(this.height / 2);
+
+      options.pos = [x, y];
     }
 
     this.asteroids.push(new Asteroids.Asteroid(options));
@@ -91,11 +93,15 @@
       velocity[1] *= 0.025;
 
       var newAsteroid = {
-        pos: this.clickOrigin,
+        pos: [
+          this.clickOrigin[0] - Math.floor(this.width / 2),
+          this.clickOrigin[1] - Math.floor(this.height / 2)
+        ],
         vel: velocity,
         image: this.images.moon,
         radius: this.objectSize,
-        alreadyScaled: true // for testing simplicity
+        alreadyScaled: true, // for testing simplicity
+        posFromCenter: true
       };
 
       this.clickOrigin = undefined;
