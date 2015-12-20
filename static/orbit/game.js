@@ -17,7 +17,7 @@
     this.dyingObjects = [];
 
     this.levelGenerator = new Asteroids.LevelGenerator({game: this});
-    // this.levelGenerator.generateLevel("initial");
+    this.levelGenerator.generateLevel("initial");
   };
 
   // Game.DIM_X = 750;
