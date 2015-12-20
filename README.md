@@ -7,9 +7,9 @@ backend and socket.io to sync up clients.
 
 ## Development Goals
 
-[X] - Allows multiple players to create objects within the same space.
-[ ] - Maintains synchronicity over time
-[ ] - Has a competitive goal :P
+- [X] Allows multiple players to create objects within the same space.
+- [ ] Maintains synchronicity over time
+- [ ] Has a competitive goal :P
 
 ## State of the Game
 
@@ -21,7 +21,7 @@ active sessions close the server will reset the game state, and opening all
 participating clients before creating bodies will allow you to participate in
 a consistent space (for a while).
 
-I haven't quite figured out the game design, but my intention is to have each 
+I haven't quite figured out the game design, but my intention is to have each
 successful revolution of a moon that you've generated earn you x number of points.
 Successive moon creation will result in moons whose size reflect your current
 points, as well as consuming some of them. Moons that collide with significantly
