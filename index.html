@@ -288,8 +288,8 @@
           for (var i = 0; i < game.asteroids.length; i++) {
             var asteroid = game.asteroids[i];
             asteroid.pos = [
-              moons[asteroid.id].pos[0], + Math.floor(game.width  / 2),
-              moons[asteroid.id].pos[1]  + Math.floor(game.height / 2)
+              moons[asteroid.id].pos[0] + Math.floor(game.width  / 2),
+              moons[asteroid.id].pos[1] + Math.floor(game.height / 2)
             ];
             asteroid.vel = moons[asteroid.id].vel;
           }
