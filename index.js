@@ -14,8 +14,11 @@ app.get('/', function(req, res){
 
 var liveMoons = {};
 var nextMoonId = 0;
+var livePlayers = 0;
 
 io.on('connection', function (socket) {
+  livePlayers++;
+
   socket.on('new moon', function(data){
     data.id = nextMoonId++;
     io.emit('new moon', data);
@@ -35,6 +38,14 @@ io.on('connection', function (socket) {
       liveMoons[moons[i].id].vel = moons[i].vel;
     }
     io.emit('update space', liveMoons);
+  });
+
+  socket.on('disconnect', function () {
+    livePlayers--;
+    if (livePlayers <= 0) {
+      liveMoons = {};
+      nextMoonId = 0;
+    }
   });
 
   io.to(socket.id).emit('setup space', liveMoons);
