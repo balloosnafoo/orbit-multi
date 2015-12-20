@@ -266,6 +266,7 @@
       $( document ).ready(function() {
         var socket = window.socket = io();
         var hasSetup = false;
+        var consoling = 0, consoling2 = 0;
 
         // socket.emit('new player', socket.id);
 
@@ -283,6 +284,7 @@
         });
 
         socket.on('update space', function (moons) {
+          console.log("returned: " + consoling2++);
           for (var i = 0; i < game.asteroids.length; i++) {
             var asteroid = game.asteroids[i];
             asteroid.pos = [
@@ -295,6 +297,7 @@
 
         setInterval(function () {
           if (hasSetup) {
+            console.log("Updating: " + consoling++);
             socket.emit('update-moons', {
               moons: game.asteroidsFromCenter(),
               origin: {height: game.height, width: game.width}
