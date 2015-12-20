@@ -4,6 +4,8 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var path = require('path');
 
+app.set('port', (process.env.PORT || 5000));
+
 app.use(express.static(path.join(__dirname, 'static')));
 
 app.get('/', function(req, res){
