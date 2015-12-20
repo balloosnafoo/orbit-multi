@@ -341,7 +341,7 @@
 
       var bottomRightX = (options.bottomRight[0] / 1700) * this.width;
       var bottomRightY = (options.bottomRight[1] / 900) * this.height;
-      options.bottomRight = [bottomRightX, bottomRightY]
+      options.bottomRight = [bottomRightX, bottomRightY];
       options.alreadyScaled = true;
     }
     this.startingZone = new Asteroids.StartingZone({
