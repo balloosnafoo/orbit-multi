@@ -71,8 +71,8 @@
     }
 
     if (options.posFromCenter) {
-      var x = options.pos[0] + Math.floor(this.width / 2);
-      var y = options.pos[1] + Math.floor(this.height / 2);
+      var x = options.posFromCenter[0] + Math.floor(this.width / 2);
+      var y = options.posFromCenter[1] + Math.floor(this.height / 2);
 
       options.pos = [x, y];
     }
