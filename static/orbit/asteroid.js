@@ -25,4 +25,15 @@
     this.pullVectors = this.pullVectors.concat([vector]);
   };
 
+  Asteroid.prototype.dup = function () {
+    var options = {
+      pos: [this.pos[0], this.pos[1]],
+      vel: [this.vel[0], this.vel[1]],
+      image: this.image,
+      radius: this.radius
+    };
+
+    return new Asteroid(options);
+  };
+
 })();

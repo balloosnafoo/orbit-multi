@@ -417,7 +417,7 @@
   };
 
   Game.prototype.asteroidsFromCenter = function () {
-    var asteroids = this.asteroids;
+    var asteroids = this.asteroids.map(function (a) { return a.dup; });
     for (var i = 0; i < asteroids.length; i++) {
       asteroids[i].pos = [
         asteroids[i].pos[0] - Math.floor(this.width  / 2),
