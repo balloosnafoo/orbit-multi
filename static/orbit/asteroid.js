@@ -30,7 +30,8 @@
       pos: [this.pos[0], this.pos[1]],
       vel: [this.vel[0], this.vel[1]],
       image: this.image,
-      radius: this.radius
+      radius: this.radius,
+      id: this.id
     };
 
     return new Asteroid(options);

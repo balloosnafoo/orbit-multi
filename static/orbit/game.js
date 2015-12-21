@@ -9,7 +9,7 @@
     this.height = options.height;
     this.images = options.images;
     this.objectSize = 30;
-    this.asteroids = []; // this.addAsteroids();
+    this.asteroids = [];
     this.planets = [];
     this.particles = [];
     this.cursor = new Asteroids.Cursor({game: this});
@@ -20,8 +20,6 @@
     this.levelGenerator.generateLevel("initial");
   };
 
-  // Game.DIM_X = 750;
-  // Game.DIM_Y = 750;
   Game.BG_COLOR = "#000000";
 
   Game.prototype.createObject = function () {
@@ -56,10 +54,11 @@
   };
 
   Game.prototype.objectFromOptions = function (options) {
+    var x, y;
     options.image = this.images.moon;
     if (!options.alreadyScaled) {
-      var x = this.width * (options.pos[0] / 1700);
-      var y = this.height * (options.pos[1] / 900);
+      x = this.width * (options.pos[0] / 1700);
+      y = this.height * (options.pos[1] / 900);
       var velX = this.width * (options.vel[0] / 1700);
       var velY = this.height * (options.vel[1] / 900);
       var radius = this.width * (options.radius / 1700);
@@ -71,8 +70,8 @@
     }
 
     if (options.posFromCenter) {
-      var x = options.pos[0] + Math.floor(this.width / 2);
-      var y = options.pos[1] + Math.floor(this.height / 2);
+      x = options.pos[0] + Math.floor(this.width / 2);
+      y = options.pos[1] + Math.floor(this.height / 2);
 
       options.pos = [x, y];
     }
@@ -216,7 +215,8 @@
 
   // Finds all lost asteroids, makes new array excluding those and updates
   // this.asteroids. Ensures that game is not slowed by orphaned objects flying
-  // into the depths of space.
+  // into the depths of space. TODO: rewrite to ensure that objects are also
+  // removed server-side.
   Game.prototype.deleteLostObjects = function () {
     // var exclusionArr = [];
     // for (var i = 0; i < this.asteroids.length; i++) {
@@ -417,7 +417,7 @@
   };
 
   Game.prototype.asteroidsFromCenter = function () {
-    var asteroids = this.asteroids.map(function (a) { return a.dup; });
+    var asteroids = this.asteroids.map(function (a) { return a.dup(); });
     for (var i = 0; i < asteroids.length; i++) {
       asteroids[i].pos = [
         asteroids[i].pos[0] - Math.floor(this.width  / 2),
