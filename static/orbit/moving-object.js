@@ -82,6 +82,7 @@
       this.leftStartingQuadrant
     ) {
       this.rotations += 1;
+      game.tallyPoints(this.radius);
       this.leftStartingQuadrant = false;
     } else if (this.currentQuadrant() !== this.startingQuadrant) {
       this.leftStartingQuadrant = true;

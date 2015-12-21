@@ -13,6 +13,7 @@
     this.planets = [];
     this.particles = [];
     this.cursor = new Asteroids.Cursor({game: this});
+    this.player = new Asteroids.Player({game: this});
     this.createPos = null;
     this.dyingObjects = [];
 
@@ -98,7 +99,7 @@
         ],
         vel: velocity,
         image: this.images.moon,
-        radius: this.objectSize,
+        radius: this.player.getObjectSize(),
         alreadyScaled: true, // for testing simplicity
         posFromCenter: true
       };
@@ -141,9 +142,10 @@
   };
 
   Game.prototype.planetFromOptions = function (options) {
+    var x, y;
     if (!options.alreadyScaled) {
-      var x = this.width * (options.pos[0] / 1700);
-      var y = this.height * (options.pos[1] / 900);
+      x = this.width * (options.pos[0] / 1700);
+      y = this.height * (options.pos[1] / 900);
       options.pos = [x, y];
 
       options.radius = this.width * (options.radius / 1700);
@@ -151,8 +153,8 @@
     }
 
     if (options.posFromCenter) {
-      var x = Math.floor(this.width / 2)  + options.pos[0];
-      var y = Math.floor(this.height / 2) + options.pos[1];
+      x = Math.floor(this.width / 2)  + options.pos[0];
+      y = Math.floor(this.height / 2) + options.pos[1];
       options.pos = [x, y];
     }
 
@@ -315,11 +317,11 @@
     var distance = Asteroids.Util.distance(object.pos, otherObject.pos);
     var otherObjectMass = (4 / 3) * Math.PI * Math.pow(otherObject.radius, 3);
 
-    var pull = .000001 * ( (otherObjectMass) / (distance * distance));
+    var pull = 0.000001 * ( (otherObjectMass) / (distance * distance));
     if (otherObject.antigravity) { pull *= -1; }
     gravVec[0] *= pull;
     gravVec[1] *= pull;
-    object.receivePull(gravVec)
+    object.receivePull(gravVec);
   };
 
   Game.prototype.getScoreInfo = function () {
@@ -390,7 +392,7 @@
       var color = Math.random() > 0.5 ? "rgb(184, 39, 19)" : "rgb(205, 116, 29)";
 
       if (Math.random() > -1) {
-        // 70% chance of being a particle
+        // 100% chance of being a particle
         var particle = new Asteroids.Particle({
           color: color,
           pos: [object.pos[0], object.pos[1]],
@@ -404,7 +406,9 @@
 
         this.particles.push(particle);
       } else {
-        // 30% chance it makes a new, smaller asteroid
+        // 0% chance it makes a new, smaller asteroid
+        // Branch currently not in use, until issue with immediate collisions
+        // is resolved.
         var asteroid = new Asteroids.Asteroid({
           pos: object.pos,
           vel: [velX, velY],
@@ -425,6 +429,10 @@
       ];
     }
     return asteroids;
+  };
+
+  Game.prototype.tallyPoints = function (moonSize) {
+    this.player.incrementPoints(moonSize);
   };
 
 })();
